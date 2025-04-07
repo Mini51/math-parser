@@ -43,7 +43,7 @@ export class Executor {
         const right = this.execute(node.right) || 0;
 
         switch (node.operator) {
-            case "ADD":
+            case "PLUS":
                 return left + right;
             case "MINUS":
                 return left - right;
@@ -124,4 +124,3 @@ export class Executor {
         delete this.variables[name];
     }
 }
-    

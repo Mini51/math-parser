@@ -82,6 +82,7 @@ export class Lexer {
                 case ')': this.advance(); return { type: TokenType.RPAREN };
                 case ',': this.advance(); return { type: TokenType.COMMA };
                 case '|': this.advance(); return { type: TokenType.PIPE };
+                case '=': this.advance(); return { type: TokenType.EQUALS };
                 default:
                     const invalidChar = this.currentChar;
                     this.advance();
