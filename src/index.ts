@@ -4,10 +4,8 @@ import { Parser } from "./parser/parser";
 import { createInterface } from "node:readline/promises";
 import { ASTNode } from "./types/ast";
 import { debugLog } from "./helpers/debug";
-
 import * as dotenv from 'dotenv';
-import { Token } from "./types/tokens";
-import { debug } from "node:console";
+
 dotenv.config();
 
 
