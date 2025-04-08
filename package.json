@@ -4,7 +4,7 @@
     "typescript": "^5.8.3"
   },
   "scripts": {
-    "test": "yarn jest && yarn jest-coverage-badges"
+    "test": "yarn jest --coverage"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",
