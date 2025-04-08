@@ -6,4 +6,5 @@ module.exports = {
   testMatch: ['**/tests/**/*.test.(ts|js)'], // Match test files
   collectCoverage: true, // Enable coverage collection
   coverageDirectory: 'coverage', // Output coverage reports to the 'coverage' directory
+  coverageReporters: ['json-summary']
 };
