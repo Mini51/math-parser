@@ -28,10 +28,15 @@ jobs:
     - name: Run Jest Tests
       run: yarn test 
 
+    - name: Upload Coverage SVG
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-svg
+        path: coverage/badge-lines.svg
+
     - name: Upload Coverage Report
       uses: actions/upload-artifact@v4
       with:
         name: coverage-report
         path: coverage
 
-    
