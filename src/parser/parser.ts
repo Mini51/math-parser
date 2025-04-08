@@ -8,7 +8,7 @@ import {
     AssignmentNode,
     AbsoluteValueNode,
     ConstantNode,
-    UnaryOperationNode
+    UnaryOperationNode,
 } from "../types/ast";
 
 export class Parser {
@@ -26,7 +26,9 @@ export class Parser {
     private expect(type: TokenType): Token {
         const token = this.current;
         if (token.type !== type) {
-            throw new Error(`Expected token type ${type}, but got ${token.type} at position ${this.pos}`);
+            throw new Error(
+                `Expected token type ${type}, but got ${token.type} at position ${this.pos}`
+            );
         }
         this.advance();
         return token;
@@ -36,7 +38,10 @@ export class Parser {
         this.tokens = tokens;
         this.pos = 0;
 
-        if (this.current.type === TokenType.VARIABLE && this.tokens[this.pos + 1]?.type === TokenType.EQUALS) {
+        if (
+            this.current.type === TokenType.VARIABLE &&
+            this.tokens[this.pos + 1]?.type === TokenType.EQUALS
+        ) {
             return this.parseAssignment();
         }
 
@@ -54,7 +59,7 @@ export class Parser {
             left = {
                 type: "UnaryOperationNode",
                 operator: op.type,
-                operand
+                operand,
             } as UnaryOperationNode;
         } else {
             left = this.parsePrimary();
@@ -85,7 +90,7 @@ export class Parser {
                 type: "BinaryOperationNode",
                 operator: op.type,
                 left,
-                right
+                right,
             } as BinaryOperationNode;
         }
 
@@ -129,7 +134,7 @@ export class Parser {
                 type: "BinaryOperationNode",
                 operator: TokenType.MULTIPLY,
                 left: node,
-                right
+                right,
             } as BinaryOperationNode;
         }
 
@@ -141,7 +146,7 @@ export class Parser {
         this.advance();
         return {
             type: "NumberNode",
-            value: parseFloat(token.value as string)
+            value: parseFloat(token.value as string),
         };
     }
 
@@ -150,7 +155,7 @@ export class Parser {
         this.advance();
         return {
             type: "VariableNode",
-            name: token.value as string
+            name: token.value as string,
         };
     }
 
@@ -175,7 +180,7 @@ export class Parser {
         return {
             type: "FunctionNode",
             name: token.value as string,
-            arguments: args
+            arguments: args,
         };
     }
 
@@ -184,7 +189,7 @@ export class Parser {
         this.advance();
         return {
             type: "ConstantNode",
-            name: token.type === TokenType.PI ? "PI" : "E"
+            name: token.type === TokenType.PI ? "PI" : "E",
         };
     }
 
@@ -194,7 +199,7 @@ export class Parser {
         this.expect(TokenType.PIPE);
         return {
             type: "AbsoluteValueNode",
-            value
+            value,
         };
     }
 
@@ -205,7 +210,7 @@ export class Parser {
         return {
             type: "AssignmentNode",
             variable,
-            value
+            value,
         };
     }
 
@@ -215,7 +220,7 @@ export class Parser {
             TokenType.MINUS,
             TokenType.MULTIPLY,
             TokenType.DIVIDE,
-            TokenType.POWER
+            TokenType.POWER,
         ].includes(type);
     }
 
@@ -241,23 +246,25 @@ export class Parser {
         return (
             (current.type === TokenType.NUMBER && this.isMultipliable(next)) ||
             (current.type === TokenType.RPAREN && this.isMultipliable(next)) ||
-            (current.type === TokenType.VARIABLE && this.isMultipliable(next)) ||
+            (current.type === TokenType.VARIABLE &&
+                this.isMultipliable(next)) ||
             (current.type === TokenType.PI && this.isMultipliable(next)) ||
-            ( current.type === TokenType.E && this.isMultipliable(next)) ||
-
-            (current.type === TokenType.FUNCTION && next?.type !== TokenType.RPAREN) // e.g., sin(2x)
+            (current.type === TokenType.E && this.isMultipliable(next)) ||
+            (current.type === TokenType.FUNCTION &&
+                next?.type !== TokenType.RPAREN) // e.g., sin(2x)
         );
     }
 
     private isMultipliable(token?: Token): boolean {
-        return !!token && (
-            token.type === TokenType.VARIABLE ||
-            token.type === TokenType.PI ||
-            token.type === TokenType.E ||
-            token.type === TokenType.LPAREN ||
-            token.type === TokenType.NUMBER ||
-            token.type === TokenType.FUNCTION ||
-            token.type === TokenType.PIPE
+        return (
+            !!token &&
+            (token.type === TokenType.VARIABLE ||
+                token.type === TokenType.PI ||
+                token.type === TokenType.E ||
+                token.type === TokenType.LPAREN ||
+                token.type === TokenType.NUMBER ||
+                token.type === TokenType.FUNCTION ||
+                token.type === TokenType.PIPE)
         );
     }
 

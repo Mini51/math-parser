@@ -8,9 +8,8 @@ import {
     FunctionNode,
     AssignmentNode,
     AbsoluteValueNode,
-    ConstantNode
+    ConstantNode,
 } from "../types/ast";
-
 
 export class Executor {
     private variables: { [key: string]: number } = {};
@@ -22,7 +21,9 @@ export class Executor {
             case "VariableNode":
                 return this.variables[(node as VariableNode).name] || 0;
             case "BinaryOperationNode":
-                return this.evaluateBinaryOperation(node as BinaryOperationNode);
+                return this.evaluateBinaryOperation(
+                    node as BinaryOperationNode
+                );
             case "UnaryOperationNode":
                 return this.evaluateUnaryOperation(node as UnaryOperationNode);
             case "FunctionNode":
@@ -30,7 +31,9 @@ export class Executor {
             case "AssignmentNode":
                 return this.executeAssignment(node as AssignmentNode);
             case "AbsoluteValueNode":
-                return Math.abs(this.execute((node as AbsoluteValueNode).value) || 0);
+                return Math.abs(
+                    this.execute((node as AbsoluteValueNode).value) || 0
+                );
             case "ConstantNode":
                 return this.evaluateConstant(node as ConstantNode);
             default:
@@ -60,18 +63,17 @@ export class Executor {
 
     private evaluateUnaryOperation(node: UnaryOperationNode): number {
         const operand = this.execute(node.operand) || 0;
-            
-            switch (node.operator) {
-                case "MINUS":
-                    return -operand;
-                default:
-                    throw new Error(`Unknown unary operator: ${node.operator}`);
-            }
+
+        switch (node.operator) {
+            case "MINUS":
+                return -operand;
+            default:
+                throw new Error(`Unknown unary operator: ${node.operator}`);
         }
-    
+    }
 
     private evaluateFunction(node: FunctionNode): number {
-        const args = node.arguments.map(arg => this.execute(arg) || 0);
+        const args = node.arguments.map((arg) => this.execute(arg) || 0);
 
         switch (node.name) {
             case "sin":

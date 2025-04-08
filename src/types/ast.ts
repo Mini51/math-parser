@@ -43,7 +43,6 @@ export interface UnaryOperationNode extends ASTNode {
     operand: ASTNode;
 }
 
-
 export interface FunctionNode extends ASTNode {
     type: "FunctionNode";
     name: string; // e.g., "sin", "cos", "log"
