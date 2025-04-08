@@ -13,7 +13,6 @@ import {
 import { builtInFunctions } from "../helpers/builtIn";
 export class Executor {
     private variables: { [key: string]: number } = {};
-
     public execute(node: ASTNode): number | null {
         switch (node.type) {
             case "NumberNode":
