@@ -1,6 +1,6 @@
 # math-parser
 
-![Code Coverage](./coverage-badge.svg)
+[![codecov](https://codecov.io/gh/Mini51/math-parser/graph/badge.svg?token=P2XO3L02NO)](https://codecov.io/gh/Mini51/math-parser)
 
 A math parser written in TypeScript (TS). This library is designed to parse and evaluate mathematical expressions efficiently and accurately.
 
