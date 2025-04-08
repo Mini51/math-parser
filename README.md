@@ -1,5 +1,7 @@
 # math-parser
 
+![Code Coverage](./coverage-badge.svg)
+
 A math parser written in TypeScript (TS). This library is designed to parse and evaluate mathematical expressions efficiently and accurately.
 
 ## Features
