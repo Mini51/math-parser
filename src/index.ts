@@ -22,22 +22,37 @@ const rl = createInterface({
     output: process.stdout,
     terminal: true,
 });
-
+let replActive = true;
 
 debugLog("REPL", "REPL initialized. Awaiting input...");
 
 
 (async function main() {
-    while (true) {
+    while (replActive) {
         const input = await rl.question("Enter a math expression: ");
-        if (input.trim().toLowerCase() === "exit") {
-            break;
+        
+        switch(input.trim().toLowerCase()) {
+            case ">exit":
+                console.log("Exiting REPL...");
+                replActive = false;
+                rl.close(); // Close the readline interface
+                return;
+            case ">clear":
+                console.clear();
+                continue
+            case ">context":
+                    console.log("Current context variables:");
+                    console.table(executor.getVariables());
+                    continue;
+            case ">help":
+                console.log("Available commands:");
+                console.log(">exit - Exit the REPL");
+                console.log(">clear - Clear the console");
+                console.log(">context - Show current context variables");
+                console.log(">help - Show this help message");
+                continue;
         }
 
-        if (input.trim().toLowerCase() === "clear") {
-            console.clear();
-            continue;
-        }
 
         try { 
             const tokens = lexer.tokenize(input);
