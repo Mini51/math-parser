@@ -10,7 +10,7 @@ import {
     AbsoluteValueNode,
     ConstantNode,
 } from "../types/ast";
-
+import { builtInFunctions } from "../helpers/builtIn";
 export class Executor {
     private variables: { [key: string]: number } = {};
 
@@ -75,25 +75,15 @@ export class Executor {
     private evaluateFunction(node: FunctionNode): number {
         const args = node.arguments.map((arg) => this.execute(arg) || 0);
 
-        switch (node.name) {
-            case "sin":
-                return Math.sin(args[0]);
-            case "cos":
-                return Math.cos(args[0]);
-            case "tan":
-                return Math.tan(args[0]);
-            case "log":
-                return Math.log(args[0]);
-            case "sqrt":
-                return Math.sqrt(args[0]);
-            case "nthroot":
-                if (args.length !== 2) {
-                    throw new Error("nthroot function requires two arguments.");
-                }
-                return Math.pow(args[0], 1 / args[1]);
-            default:
-                throw new Error(`Unknown function: ${node.name}`);
+        const func = builtInFunctions[node.name];
+        if (typeof func !== "function") {
+            throw new Error(`Unknown function: ${node.name}`);
         }
+        const result = func(...args);
+        if (Array.isArray(result)) {
+            throw new Error(`Function ${node.name} returned an array.`);
+        }
+        return result;
     }
     private executeAssignment(node: AssignmentNode): number {
         const value = this.execute(node.value) || 0;

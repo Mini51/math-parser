@@ -1,6 +1,5 @@
+import { builtInFunctions } from "../helpers/builtIn";
 import { Token, TokenType } from "../types/tokens";
-
-const FUNCTIONS = ["sin", "cos", "tan", "log", "sqrt", "nthroot"];
 
 export class Lexer {
     private pos = 0;
@@ -46,8 +45,10 @@ export class Lexer {
 
         if (result === "pi") return [{ type: TokenType.PI }];
         if (result === "e") return [{ type: TokenType.E }];
-        if (FUNCTIONS.includes(result))
+        // check if the identifier is a built-in function
+        if (builtInFunctions[result]) {
             return [{ type: TokenType.FUNCTION, value: result }];
+        }
 
         // If not a constant or function, split into individual characters
         return result
