@@ -14,11 +14,6 @@ export class Lexer {
             this.pos < this.input.length ? this.input[this.pos] : null;
     }
 
-    private peek(): string | null {
-        return this.pos + 1 < this.input.length
-            ? this.input[this.pos + 1]
-            : null;
-    }
 
     private skipWhitespace() {
         while (this.currentChar !== null && /\s/.test(this.currentChar)) {
