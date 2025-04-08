@@ -1,4 +1,6 @@
+import { debug } from "console";
 import { builtInFunctions } from "../helpers/builtIn";
+import { debugLog } from "../helpers/debug";
 import { Token, TokenType } from "../types/tokens";
 
 export class Lexer {
@@ -126,18 +128,22 @@ export class Lexer {
     public tokenize(input: string): Token[] {
         const tokens: Token[] = [];
         let token: Token;
-
+        
         // Reset lexer state
         this.pos = 0;
         this.input = input;
         this.currentChar = this.input.length > 0 ? this.input[0] : null;
+        debugLog("LEXER", `State reset with input: "${input}"`);
 
         // Tokenize the input until EOF
         do {
             token = this.getNextToken();
+            debugLog("LEXER", `Tokenized index ${this.pos}: ${JSON.stringify(token)}`);
             tokens.push(token);
         } while (token.type !== TokenType.EOF);
 
+        debugLog("LEXER", "Tokenization complete.");
+        debugLog("LEXER", "Tokens: " + tokens.map((t) => `${t.type}${t.value ? `:${t.value}` : ''}`).join(", "));
         return tokens;
     }
 }

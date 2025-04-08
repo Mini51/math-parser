@@ -10,6 +10,8 @@ import {
     ConstantNode,
     UnaryOperationNode,
 } from "../types/ast";
+import { debugLog } from "../helpers/debug";
+import { debug } from "console";
 
 export class Parser {
     private tokens: Token[] = [];
@@ -34,27 +36,37 @@ export class Parser {
         return token;
     }
 
+    private debugLogContext(message: string): void {
+        debugLog("PARSE", `${message} | Current Token: ${this.current?.type} (${this.current?.value}) | Position: ${this.pos}`);
+    }
+
     public parse(tokens: Token[]): ASTNode | null {
+        this.debugLogContext("Initializing parser");
         this.tokens = tokens;
         this.pos = 0;
+        this.debugLogContext("Parser initialized");
 
         if (
             this.current.type === TokenType.VARIABLE &&
             this.tokens[this.pos + 1]?.type === TokenType.EQUALS
         ) {
+            this.debugLogContext("Detected assignment");
             return this.parseAssignment();
         }
 
+        this.debugLogContext("Parsing expression");
         return this.parseExpression();
     }
 
     private parseExpression(precedence = 0): ASTNode {
+        this.debugLogContext("Parsing expression");
         let left: ASTNode;
 
         // Handle unary operators (e.g., -1) at the start of an expression
         if (this.isUnaryOperator(this.current.type)) {
             const op = this.current;
             this.advance();
+            this.debugLogContext(`Unary operator detected: ${op.type}`);
             const operand = this.parseExpression(this.getPrecedence(op.type));
             left = {
                 type: "UnaryOperationNode",
@@ -64,11 +76,13 @@ export class Parser {
         } else {
             left = this.parsePrimary();
         }
-
+        
+        this.debugLogContext("Primary parsed successfully");
         return this.parseBinaryOperations(left, precedence);
     }
 
     private parseBinaryOperations(left: ASTNode, precedence: number): ASTNode {
+        this.debugLogContext("Parsing binary operations");
         while (true) {
             let op: Token | null = null;
             let opPrecedence: number;
@@ -78,9 +92,11 @@ export class Parser {
                 opPrecedence = this.getPrecedence(op.type);
                 if (opPrecedence < precedence) break;
                 this.advance();
+                this.debugLogContext(`Binary operator detected: ${op.type}`);
             } else if (this.isImplicitMultiplication()) {
                 op = { type: TokenType.MULTIPLY, value: "*" } as Token;
                 opPrecedence = this.getPrecedence(TokenType.MULTIPLY);
+                this.debugLogContext("Implicit multiplication detected");
             } else {
                 break;
             }
@@ -93,13 +109,15 @@ export class Parser {
                 right,
             } as BinaryOperationNode;
         }
-
+        
+        this.debugLogContext("Binary operations parsed successfully");
         return left;
     }
 
     private parsePrimary(): ASTNode {
+        this.debugLogContext("Parsing primary");
         let node: ASTNode;
-
+        
         const token = this.current;
         switch (token.type) {
             case TokenType.NUMBER:
@@ -114,6 +132,7 @@ export class Parser {
                 break;
             case TokenType.LPAREN:
                 this.advance();
+                this.debugLogContext("Left parenthesis detected");
                 node = this.parseExpression();
                 this.expect(TokenType.RPAREN);
                 break;
@@ -136,14 +155,16 @@ export class Parser {
                 left: node,
                 right,
             } as BinaryOperationNode;
+            this.debugLogContext("Implicit multiplication chaining detected");
         }
-
         return node;
     }
 
     private parseNumber(): NumberNode {
+        debugLog("PARSE", "Parsing number");
         const token = this.current;
         this.advance();
+        debugLog("PARSE", "Number parsed successfully");
         return {
             type: "NumberNode",
             value: parseFloat(token.value as string),
@@ -151,8 +172,10 @@ export class Parser {
     }
 
     private parseVariable(): VariableNode {
+        debugLog("PARSE", "Parsing variable");
         const token = this.current;
         this.advance();
+        debugLog("PARSE", "Variable parsed successfully");
         return {
             type: "VariableNode",
             name: token.value as string,
@@ -160,6 +183,7 @@ export class Parser {
     }
 
     private parseFunction(): FunctionNode {
+        debugLog("PARSE", "Parsing function");
         const token = this.current;
         this.advance();
         this.expect(TokenType.LPAREN);
@@ -177,6 +201,7 @@ export class Parser {
         }
 
         this.expect(TokenType.RPAREN);
+        debugLog("PARSE", "Function parsed successfully");
         return {
             type: "FunctionNode",
             name: token.value as string,
@@ -185,8 +210,10 @@ export class Parser {
     }
 
     private parseConstant(): ConstantNode {
+        debugLog("PARSE", "Parsing constant");
         const token = this.current;
         this.advance();
+        debugLog("PARSE", "Constant parsed successfully");
         return {
             type: "ConstantNode",
             name: token.type === TokenType.PI ? "PI" : "E",
@@ -194,9 +221,11 @@ export class Parser {
     }
 
     private parseAbsoluteValue(): AbsoluteValueNode {
+        debugLog("PARSE", "Parsing absolute value");
         this.advance();
         const value = this.parseExpression();
         this.expect(TokenType.PIPE);
+        debugLog("PARSE", "Absolute value parsed successfully");
         return {
             type: "AbsoluteValueNode",
             value,
@@ -204,9 +233,11 @@ export class Parser {
     }
 
     private parseAssignment(): AssignmentNode {
+        debugLog("PARSE", "Parsing assignment");
         const variable = this.parseVariable();
         this.expect(TokenType.EQUALS);
         const value = this.parseExpression();
+        debugLog("PARSE", "Assignment parsed successfully");
         return {
             type: "AssignmentNode",
             variable,
