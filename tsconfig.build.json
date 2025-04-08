@@ -1,8 +1,14 @@
 {
-  "extends": "./tsconfig.json", // Extend the base tsconfig
+  "extends": "./tsconfig.json",
+  "exclude": [
+    "tests",
+    "**/*.test.ts",
+    "**/*.spec.ts"
+  ],
   "compilerOptions": {
-    "outDir": "./.test-dist" // Redirect output for tests to a temporary directory
-  },
-  "include": ["tests/**/*"], // Include all files in the 'tests' directory
-  "exclude": ["node_modules", "dist"] // Exclude 'node_modules' and 'dist' directories
+    "outDir": "./dist",
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": false
+  }
 }
