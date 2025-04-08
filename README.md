@@ -32,7 +32,16 @@ node dist/index.js
 
 once you have built the parser you can use its repl to test out the parser.
 
-**NOTE** to exit the repl you can use `ctrl + c` or type `exit` and hit enter. you can also clear the console by typing `clear` and hitting enter.
+**NOTE** The repl does provide some functions that you can call by prefixing your input with `>`.
+
+### REPL Commands
+
+The following commands are available in the REPL:
+
+- `>help` - Displays a list of available commands.
+- `>context` - Lists all defined variables and their values.
+- `>clear` - Clears all defined variables.
+- `>exit` - Exits the REPL.
 
 ## Parser
 
