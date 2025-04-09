@@ -55,6 +55,7 @@ debugLog("REPL", "REPL initialized. Awaiting input...");
         try { 
             const tokens = lexer.tokenize(input);
             const ast = parser.parse(tokens);
+            console.log("AST:", JSON.stringify(ast, null, 2));
             const result = executor.execute(ast as ASTNode);
             console.log("Result:", result);
         } catch (err) {
