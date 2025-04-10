@@ -12,7 +12,7 @@ import {
 } from "../types/ast";
 import { builtInFunctions } from "../helpers/builtIn";
 import { debugLog } from "../helpers/debug";
-import { debug } from "console";
+
 
 export class Executor {
     private variables: { [key: string]: number } = {};
@@ -53,15 +53,13 @@ export class Executor {
 
     private executeVariable(node: VariableNode): number {
         this.debugLogContext("Executing VariableNode", node);
-        if (!(node.name in this.variables)) {
-            throw new Error(`Undefined variable: ${node.name}`);
-        }
+        this.getVariable(node.name);
         return this.variables[node.name];
     }
 
     private executeBinaryOperation(node: BinaryOperationNode): number {
         this.debugLogContext("Executing BinaryOperationNode", node);
-        const left = this.execute(node.left) || 0;
+        const left = this.execute(node.left)!
         const right = this.execute(node.right) || 0;
 
         switch (node.operator) {
@@ -83,7 +81,7 @@ export class Executor {
 
     private executeUnaryOperation(node: UnaryOperationNode): number {
         this.debugLogContext("Executing UnaryOperationNode", node);
-        const operand = this.execute(node.operand) || 0;
+        const operand = this.execute(node.operand)!
 
         switch (node.operator) {
             case "MINUS":
@@ -102,22 +100,19 @@ export class Executor {
             throw new Error(`Unknown function: ${node.name}`);
         }
         const result = func(...args);
-        if (Array.isArray(result)) {
-            throw new Error(`Function ${node.name} returned an array.`);
-        }
         return result;
     }
 
     private executeAssignment(node: AssignmentNode): number {
         this.debugLogContext("Executing AssignmentNode", node);
-        const value = this.execute(node.value) || 0;
+        const value = this.execute(node.value)!
         this.variables[node.variable.name] = value;
         return value;
     }
 
     private executeAbsoluteValue(node: AbsoluteValueNode): number {
         this.debugLogContext("Executing AbsoluteValueNode", node);
-        const value = this.execute(node.value) || 0;
+        const value = this.execute(node.value)!
         return Math.abs(value);
     }
 
@@ -138,16 +133,19 @@ export class Executor {
     }
 
     public getVariable(name: string): number | null {
-        return this.variables[name] || null;
+        if (!(name in this.variables)) {
+            throw new Error(`Undefined variable: ${name}`);
+        }
+        return this.variables[name];
     }
 
     public clearVariables(): void {
-        this.variables = {};
-    }
+        this.variables = {};        
+    };
 
     public getVariables(): { [key: string]: number } {
         return this.variables;
-    }
+    };
 
     public removeVariable(name: string): void {
         delete this.variables[name];

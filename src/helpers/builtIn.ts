@@ -1,8 +1,9 @@
 import { sign } from "crypto";
 
+
 export const builtInFunctions: Record<
     string,
-    (...args: any[]) => number | number[]
+    (...args: any[]) => number
 > = {
     // Trig Functions
     sin: (x: number) => {
@@ -86,39 +87,21 @@ export const builtInFunctions: Record<
     },
     // Hyperbolic Trig Functions
     sinh: (x: number) => {
-        if (x === 0) {
-            throw new Error("Division by zero in sinh function.");
-        }
         return Math.sinh(x);
     },
     cosh: (x: number) => {
-        if (x === 0) {
-            throw new Error("Division by zero in cosh function.");
-        }
         return Math.cosh(x);
     },
     tanh: (x: number) => {
-        if (x === 0) {
-            throw new Error("Division by zero in tanh function.");
-        }
         return Math.tanh(x);
     },
     csch: (x: number) => {
-        if (x === 0) {
-            throw new Error("Division by zero in csch function.");
-        }
         return 1 / Math.sinh(x);
     },
     sech: (x: number) => {
-        if (x === 0) {
-            throw new Error("Division by zero in sech function.");
-        }
         return 1 / Math.cosh(x);
     },
     coth: (x: number) => {
-        if (x === 0) {
-            throw new Error("Division by zero in coth function.");
-        }
         return 1 / Math.tanh(x);
     },
     // Number theory Functions
@@ -149,15 +132,13 @@ export const builtInFunctions: Record<
         return Math.floor(x);
     },
     round: (x: number, y: number) => {
-        if (!y) {
+        if (!y || y === 0) {
             return Math.round(x);
         }
         if (y < 0) {
-            throw new Error("Round function only accepts positive values.");
+            throw new Error("Round percision must be non-negative.");
         }
-        if (y === 0) {
-            return Math.round(x);
-        }
+
         const factor = Math.pow(10, y);
         return Math.round(x * factor) / factor;
     },
