@@ -46,16 +46,22 @@ export class Parser {
         this.pos = 0;
         this.debugLogContext("Parser initialized");
 
+        let ast: ASTNode | null;
+
         if (
             this.current.type === TokenType.VARIABLE &&
             this.tokens[this.pos + 1]?.type === TokenType.EQUALS
         ) {
             this.debugLogContext("Detected assignment");
-            return this.parseAssignment();
+            ast = this.parseAssignment();
+        } else {
+            this.debugLogContext("Parsing expression");
+            ast = this.parseExpression();
         }
 
-        this.debugLogContext("Parsing expression");
-        return this.parseExpression();
+        // Ensure the input is fully consumed
+        this.expect(TokenType.EOF);
+        return ast;
     }
 
     private parseExpression(precedence = 0): ASTNode {
@@ -90,13 +96,12 @@ export class Parser {
             if (this.isBinaryOperator(this.current.type)) {
                 op = this.current;
                 opPrecedence = this.getPrecedence(op.type);
+                if (op.type === TokenType.DIVIDE) {
+                    opPrecedence += 0.5; 
+                }
                 if (opPrecedence < precedence) break;
                 this.advance();
                 this.debugLogContext(`Binary operator detected: ${op.type}`);
-            } else if (this.isImplicitMultiplication()) {
-                op = { type: TokenType.MULTIPLY, value: "*" } as Token;
-                opPrecedence = this.getPrecedence(TokenType.MULTIPLY);
-                this.debugLogContext("Implicit multiplication detected");
             } else {
                 break;
             }
@@ -109,7 +114,7 @@ export class Parser {
                 right,
             } as BinaryOperationNode;
         }
-        
+
         this.debugLogContext("Binary operations parsed successfully");
         return left;
     }
@@ -145,8 +150,6 @@ export class Parser {
             default:
                 throw new Error(`Unexpected token: ${token.type}`);
         }
-
-        // Support implicit multiplication chaining: e.g., aaaa, 2x, (x+1)(x-1)
         while (this.isMultipliable(this.current)) {
             const right = this.parsePrimary();
             node = {
@@ -255,6 +258,8 @@ export class Parser {
         ].includes(type);
     }
 
+    //@ts-ignore 
+    // This function will never take in a token type that is not in the switch statement
     private getPrecedence(type: TokenType): number {
         switch (type) {
             case TokenType.PLUS:
@@ -265,26 +270,10 @@ export class Parser {
                 return 2;
             case TokenType.POWER:
                 return 3;
-            default:
-                return 0;
         }
+        
     }
 
-    private isImplicitMultiplication(): boolean {
-        const current = this.current;
-        const next = this.tokens[this.pos + 1];
-
-        return (
-            (current.type === TokenType.NUMBER && this.isMultipliable(next)) ||
-            (current.type === TokenType.RPAREN && this.isMultipliable(next)) ||
-            (current.type === TokenType.VARIABLE &&
-                this.isMultipliable(next)) ||
-            (current.type === TokenType.PI && this.isMultipliable(next)) ||
-            (current.type === TokenType.E && this.isMultipliable(next)) ||
-            (current.type === TokenType.FUNCTION &&
-                next?.type !== TokenType.RPAREN) // e.g., sin(2x)
-        );
-    }
 
     private isMultipliable(token?: Token): boolean {
         return (
@@ -294,8 +283,7 @@ export class Parser {
                 token.type === TokenType.E ||
                 token.type === TokenType.LPAREN ||
                 token.type === TokenType.NUMBER ||
-                token.type === TokenType.FUNCTION ||
-                token.type === TokenType.PIPE)
+                token.type === TokenType.FUNCTION )
         );
     }
 

@@ -70,13 +70,7 @@ describe("Lexer", () => {
     });
 
     it("should handle invalid characters", () => {
-        const tokens = lexer.tokenize("@ # $");
-        expect(tokens).toEqual([
-            { type: TokenType.INVALID, value: "@" },
-            { type: TokenType.INVALID, value: "#" },
-            { type: TokenType.INVALID, value: "$" },
-            { type: TokenType.EOF }
-        ]);
+        expect(() => lexer.tokenize("@")).toThrow("Invalid character: @");
     });
 
     it("should handle mixed input", () => {

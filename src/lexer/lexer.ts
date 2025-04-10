@@ -112,8 +112,7 @@ export class Lexer {
                     return { type: TokenType.EQUALS };
                 default:
                     const invalidChar = this.currentChar;
-                    this.advance();
-                    return { type: TokenType.INVALID, value: invalidChar };
+                    throw new Error(`Invalid character: ${invalidChar}`);
             }
         }
 
